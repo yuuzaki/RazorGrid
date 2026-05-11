@@ -48,15 +48,15 @@
         else if (isChangePassword)
         {
             <h4 class="text-center mb-3">Update Password</h4>
-            <EditForm Model="loginModel" OnValidSubmit="ResetPassword" FormName="ResetPassword">
+            <EditForm Model="changePasswordModel" OnValidSubmit="ResetPassword" FormName="ResetPassword">
                 <DataAnnotationsValidator />
                 <div>
                     <label class="form-label">Password</label>
-                    <InputText type="password" class="form-control mb-2" @bind-Value="loginModel.Password" placeholder="New Password" />
+                    <InputText type="password" class="form-control mb-2" @bind-Value="changePasswordModel.Password" placeholder="New Password" />
                     <label class="form-label">New Password</label>
-                    <InputText type="password" class="form-control mb-2" @bind-Value="loginModel.NewPassword" placeholder="New Password" />
+                    <InputText type="password" class="form-control mb-2" @bind-Value="changePasswordModel.NewPassword" placeholder="New Password" />
                     <label class="form-label">Reconfirm New Password</label>
-                    <InputText type="password" class="form-control mb-2" @bind-Value="loginModel.ConfirmNewPassword" placeholder="New Password" />
+                    <InputText type="password" class="form-control mb-2" @bind-Value="changePasswordModel.ConfirmNewPassword" placeholder="New Password" />
                     <button class="btn btn-primary w-100" >Reset Password</button>
                 </div>
             </EditForm>
@@ -67,9 +67,9 @@
                 <DataAnnotationsValidator />
                 <h4 class="text-center mb-3">User Activation</h4> <div>
                     <label class="form-label">New Password</label>
-                    <InputText type="password" class="form-control mb-2" @bind-Value="loginModel.NewPassword" placeholder="New Password" />
+                    <InputText type="password" class="form-control mb-2" @bind-Value="resetPasswordModel.NewPassword" placeholder="New Password" />
                     <label class="form-label">Reconfirm New Password</label>
-                    <InputText type="password" class="form-control mb-2" @bind-Value="loginModel.ConfirmNewPassword" placeholder="New Password" />
+                    <InputText type="password" class="form-control mb-2" @bind-Value="resetPasswordModel.ConfirmNewPassword" placeholder="New Password" />
                     <button class="btn btn-primary w-100" >Reset Password</button>
                 </div>
             </EditForm>
@@ -106,6 +106,8 @@
 
 @code {
     private LoginModel loginModel = new();
+    private ResetPasswordModel resetPasswordModel = new();
+    private ChangePasswordModel changePasswordModel = new();
     private string errorMessage;
 
     private string waitingLine1 = String.Empty;
@@ -185,7 +187,7 @@
 
     private async Task ResetPassword()
     {
-        if (loginModel.NewPassword == loginModel.ConfirmNewPassword)
+        if (resetPasswordModel.NewPassword == resetPasswordModel.ConfirmNewPassword)
         {
             isChangePassword = false;
             isWaitingProcess = true;
@@ -206,7 +208,7 @@
     }
     private async Task ActivateResetPassword()
     {
-        if (loginModel.NewPassword == loginModel.ConfirmNewPassword)
+        if (resetPasswordModel.NewPassword == resetPasswordModel.ConfirmNewPassword)
         {
             isUnactivatedUser = false;
             isWaitingProcess = true;
@@ -279,14 +281,24 @@
         public string Username { get; set; }
         [Required(ErrorMessage = "Password is required")]
         public string Password { get; set; }
+    }
 
-        
+    public class ResetPasswordModel
+    {
         [Required(ErrorMessage = "Password is required")]
         public string NewPassword { get; set; }
         [Required(ErrorMessage = "Password is required")]
         public string ConfirmNewPassword { get; set; }
     }
-
+    public class ChangePasswordModel
+    {
+        [Required(ErrorMessage = "Password is required")]
+        public string Password { get; set; }
+        [Required(ErrorMessage = "Password is required")]
+        public string NewPassword { get; set; }
+        [Required(ErrorMessage = "Password is required")]
+        public string ConfirmNewPassword { get; set; }
+    }
     public class AuthResponse
     {
         public string Status { get; set; }
