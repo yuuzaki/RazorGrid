@@ -1,18 +1,37 @@
 
+using System.Threading.RateLimiting;
 using BlazorGrid.Components;
+using Microsoft.AspNetCore.RateLimiting;
 using MudBlazor.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddHttpClient();
-// Add services to the container.
+builder.Services.AddHealthChecks();
 builder.Services.AddRazorComponents()
-    .AddInteractiveServerComponents()
+    .AddInteractiveServerComponents(options =>
+    {
+        options.DisconnectedCircuitRetentionPeriod = TimeSpan.FromMinutes(1);
+    })
     .AddInteractiveWebAssemblyComponents();
 builder.Services.AddMudServices();
 
+builder.Services.AddRateLimiter(options =>
+{
+    options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(context =>
+        RateLimitPartition.GetFixedWindowLimiter(
+            partitionKey: context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+            factory: _ => new FixedWindowRateLimiterOptions
+            {
+                PermitLimit = 10,
+                Window = TimeSpan.FromSeconds(10),
+                QueueLimit = 0
+            }));
+
+    options.RejectionStatusCode = 429;
+});
+
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseWebAssemblyDebugging();
@@ -20,14 +39,15 @@ if (app.Environment.IsDevelopment())
 else
 {
     app.UseExceptionHandler("/Error", createScopeForErrors: true);
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
 app.UseHttpsRedirection();
-
 app.UseStaticFiles();
+app.UseRateLimiter();
 app.UseAntiforgery();
+
+app.MapHealthChecks("/health");
 
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode()

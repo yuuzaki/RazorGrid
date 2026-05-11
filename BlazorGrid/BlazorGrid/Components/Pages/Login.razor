@@ -48,6 +48,7 @@
         else if (isChangePassword)
         {
             <h4 class="text-center mb-3">Update Password</h4>
+            <p class="text-center text-muted">@loginModel.Username</p>
             <EditForm Model="changePasswordModel" OnValidSubmit="ResetPassword" FormName="ResetPassword">
                 <DataAnnotationsValidator />
                 <div>
@@ -187,18 +188,20 @@
 
     private async Task ResetPassword()
     {
-        if (resetPasswordModel.NewPassword == resetPasswordModel.ConfirmNewPassword)
+        if (changePasswordModel.NewPassword == changePasswordModel.ConfirmNewPassword)
         {
+            Console.WriteLine(loginModel.Username);
+            // var payload = new { Username = loginModel.Username, OldPassword = changePasswordModel.Password, NewPassword = changePasswordModel.NewPassword };
+            // var response = await Http.PostAsJsonAsync("api/auth/change-password", payload);
             isChangePassword = false;
             isWaitingProcess = true;
             StateHasChanged();
             await Task.Delay(1300);
             waitingProcessResult = true;
-            waitingLine1 = "Successfully update your password!"; 
+            waitingLine1 = "Successfully update your password!";
             waitingLine2 = "Redirect to login <span class=\"dots\"></span>";
             StateHasChanged();
             await Task.Delay(1300);
-            //errorMessage = "Password updated. Please login again.";
             NavigateToLogin();
         }
         else
@@ -210,6 +213,8 @@
     {
         if (resetPasswordModel.NewPassword == resetPasswordModel.ConfirmNewPassword)
         {
+            // var payload = new { Username = loginModel.Username, NewPassword = resetPasswordModel.NewPassword };
+            // var response = await Http.PostAsJsonAsync("api/auth/activate", payload);
             isUnactivatedUser = false;
             isWaitingProcess = true;
             //show update card
