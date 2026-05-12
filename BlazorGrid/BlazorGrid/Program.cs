@@ -1,12 +1,15 @@
 
 using System.Threading.RateLimiting;
 using BlazorGrid.Components;
+using BlazorGrid.Services;
 using Microsoft.AspNetCore.RateLimiting;
 using MudBlazor.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddHttpClient();
 builder.Services.AddHealthChecks();
+builder.Services.AddSignalR().AddMessagePackProtocol();
+
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents(options =>
     {
@@ -14,6 +17,7 @@ builder.Services.AddRazorComponents()
     })
     .AddInteractiveWebAssemblyComponents();
 builder.Services.AddMudServices();
+builder.Services.AddSingleton<QueryParamProtector>();
 
 builder.Services.AddRateLimiter(options =>
 {

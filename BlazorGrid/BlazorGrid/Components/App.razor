@@ -15,7 +15,40 @@
 
 <body>
     <Routes />
-    <script src="_framework/blazor.web.js"></script>
+
+    <div id="components-reconnect-modal">
+        <div class="reconnect-card">
+            <div class="reconnect-state-show">
+                <div class="reconnect-spinner"></div>
+                <h5 class="reconnect-title">Reconnecting&hellip;</h5>
+                <p class="reconnect-message">Connection lost. Attempting to reconnect to the server.</p>
+            </div>
+            <div class="reconnect-state-failed">
+                <div class="reconnect-icon reconnect-icon--error">&#x2715;</div>
+                <h5 class="reconnect-title">Connection Failed</h5>
+                <p class="reconnect-message">Could not reconnect after multiple attempts.</p>
+                <button class="reconnect-btn" onclick="window.location.reload()">Reload Page</button>
+            </div>
+            <div class="reconnect-state-rejected">
+                <div class="reconnect-icon reconnect-icon--warning">&#x26A0;</div>
+                <h5 class="reconnect-title">Session Expired</h5>
+                <p class="reconnect-message">Your session has expired. Please reload to continue.</p>
+                <button class="reconnect-btn" onclick="window.location.reload()">Reload Page</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="_framework/blazor.web.js" autostart="false"></script>
+    <script>
+        Blazor.start({
+            circuit: {
+                reconnectionOptions: {
+                    maxRetries: 20,
+                    retryIntervalMilliseconds: 3000,
+                },
+            },
+        });
+    </script>
 </body>
 
 </html>
