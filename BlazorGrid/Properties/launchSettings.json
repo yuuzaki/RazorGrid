@@ -8,7 +8,7 @@
       },
       "dotnetRunMessages": true,
       "inspectUri": "{wsProtocol}://{url.hostname}:{url.port}/_framework/debug/ws-proxy?browser={browserInspectUri}",
-      "applicationUrl": "http://192.168.0.130:5001"
+      "applicationUrl": "http://192.168.0.102:5002"
     },
     "https": {
       "commandName": "Project",

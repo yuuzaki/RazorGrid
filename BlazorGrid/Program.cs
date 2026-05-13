@@ -3,7 +3,6 @@ using System.Threading.RateLimiting;
 using BlazorGrid.Components;
 using BlazorGrid.Services;
 using Microsoft.AspNetCore.RateLimiting;
-using MudBlazor.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddHttpClient();
@@ -16,7 +15,6 @@ builder.Services.AddRazorComponents()
         options.DisconnectedCircuitRetentionPeriod = TimeSpan.FromMinutes(1);
     })
     .AddInteractiveWebAssemblyComponents();
-builder.Services.AddMudServices();
 builder.Services.AddSingleton<QueryParamProtector>();
 
 builder.Services.AddRateLimiter(options =>

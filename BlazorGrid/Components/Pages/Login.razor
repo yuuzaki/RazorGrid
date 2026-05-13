@@ -5,104 +5,84 @@
 @inject BlazorGrid.Services.QueryParamProtector Protector
 @using System.ComponentModel.DataAnnotations
 
-<div class="container d-flex justify-content-center align-items-center vh-100">
-    <div class="card p-4 shadow-sm w-100" style="max-width:400px">
-        <h1 class="text-center fw-bold mb-2">AUTH APP</h1>
-
-        @if(!isWaiting2FA){
-            <h4 class="text-center mb-3">Login</h4>
-        }
-        @if (!string.IsNullOrEmpty(errorMessage))
-        {
-            <div class="alert alert-danger">@errorMessage</div>
-        }
+<div class="auth-page-wrapper">
+    <div class="auth-card">
+        <h1 class="app-title">AUTH APP</h1>
 
         @if (isWaiting2FA)
         {
-            <div class="slide-from-right">
-                <h4 class="text-center mb-3">Login in process</h4>
-                <div class="text-center">
-                    <div class="spinner-border mb-3"></div>
-                    @if (!approved2FA)
-                    {
-                        <p>Please approve login on your mobile app <span class="dots"></span></p>
-                    }
-                    else
-                    {
-                        <p>2FA Approved, redirecting <span class="dots"></span></p>
-                    }
-                </div>
+            <div class="slide-from-right text-center">
+                <h2 class="section-title">Login in process</h2>
+                <div class="spinner"></div>
+                @if (!approved2FA)
+                {
+                    <p>Please approve login on your mobile app <span class="dots"></span></p>
+                }
+                else
+                {
+                    <p>2FA Approved, redirecting <span class="dots"></span></p>
+                }
             </div>
         }
-        @* else if (isWaitingProcess)
-        {
-            <div class="slide-from-right">
-                <h4 class="text-center mb-3">Processing</h4>
-                <div class="text-center">
-                    <div class="spinner-border mb-3"></div>
-                    @if (waitingProcessResult)
-                    {
-                        <p>@((MarkupString)waitingLine1)</p>
-                        <p>@((MarkupString)waitingLine2)</p>
-                    }
-                    else
-                    {
-                        <p>Sending request <span class="dots"></span></p>
-                    }
-                </div>
-            </div>
-        } *@
         else
         {
             <div class="slide-from-right">
-                
+                <h2 class="section-title">Login</h2>
+
                 <EditForm Model="loginModel" OnValidSubmit="HandleLogin" FormName="Login">
                     <DataAnnotationsValidator />
 
-                    <div class="mb-3">
-                        <label class="form-label">Username</label>
-                        <InputText class="form-control" @bind-Value="loginModel.Username" autocomplete="username" />
+                    <div class="field-wrapper">
+                        <input type="text" id="login-username" class="field-input"
+                               placeholder=" " @bind="loginModel.Username"
+                               autocomplete="username" />
+                        <label class="field-label" for="login-username">Username</label>
                         <ValidationMessage For="@(() => loginModel.Username)" />
                     </div>
 
-                    <div class="mb-3">
-                        <label class="form-label">Password</label>
-                        <InputText type="password" class="form-control" @bind-Value="loginModel.Password" autocomplete="current-password" />
+                    <div class="field-wrapper" style="margin-bottom:1.75rem;">
+                        <input type="password" id="login-password"
+                               class="field-input" placeholder=" "
+                               @bind="loginModel.Password"
+                               autocomplete="current-password" />
+                        <label class="field-label" for="login-password">Password</label>
                         <ValidationMessage For="@(() => loginModel.Password)" />
                     </div>
 
-                    <button class="btn btn-primary w-100" type="submit">Login</button>
+                    <button type="submit" class="auth-btn">Login</button>
                 </EditForm>
 
-                <div class="text-center mt-3">
-                    <a href="/forgot-password" class="text-decoration-none small">Forgot password?</a>
-                </div>
+                <p class="text-center" style="margin:0;">
+                    <a href="/forgot-password" class="auth-link">Forgot password?</a>
+                </p>
             </div>
         }
     </div>
 </div>
+
+@if (_toastMsg is not null)
+{
+    <div class="app-toast app-toast--@_toastType">
+        <span>@_toastMsg</span>
+        <button class="app-toast-close" @onclick="@(() => _toastMsg = null)">&times;</button>
+    </div>
+}
 
 @code {
     [SupplyParameterFromQuery(Name = "redirectUrl")]
     public string? RedirectUrl { get; set; }
 
     private LoginModel loginModel = new();
-    private string? errorMessage;
-
-    private string waitingLine1 = string.Empty;
-    private string waitingLine2 = string.Empty;
-
     private bool isWaiting2FA = false;
     private bool approved2FA = false;
-    private bool isWaitingProcess = false;
-    private bool waitingProcessResult = false;
-
     private string? transactionId;
+
+    private string? _toastMsg;
+    private string _toastType = "error";
+    private void ShowToast(string msg, string type = "error") { _toastMsg = msg; _toastType = type; }
 
     protected async Task HandleLogin()
     {
-        errorMessage = string.Empty;
-
         // var response = await Http.PostAsJsonAsync("api/auth/login", loginModel);
         // var result = await response.Content.ReadFromJsonAsync<LoginResponseModel>();
         Thread.Sleep(200);
@@ -125,7 +105,7 @@
                 break;
 
             case "INVALID":
-                errorMessage = "Invalid username or password";
+                ShowToast("Invalid username or password");
                 break;
 
             case "PASSWORD_EXPIRED":
@@ -138,6 +118,7 @@
 
             case "REQUIRES_2FA":
                 isWaiting2FA = true;
+                await mockAuth();
                 transactionId = result.TransactionId;
                 await Task.Delay(7000);
                 approved2FA = true;
@@ -147,7 +128,17 @@
                 break;
         }
     }
+    public static async Task  mockAuth(){
+        using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(12));
 
+        while (!cts.Token.IsCancellationRequested)
+        {
+            var approved = true;//await Task.Delay(3000)//CheckTwoFactorStatusAsync();
+            if (approved) break;
+            await Task.Delay(1500, cts.Token); // poll every 1.5s
+        }
+
+    }
     public class LoginResponseModel
     {
         public string Status { get; set; } = "SUCCESS";

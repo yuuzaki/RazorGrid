@@ -2,31 +2,221 @@
 html, body {
     height: 100%;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: #0066ff;
+    background: linear-gradient(135deg, #ffe6f0 0%, #fff0f8 60%, #fce4ec 100%);
+    min-height: 100vh;
 }
 
-a, .btn-link {
-    color: #006bb7;
-}
-
-.btn-primary {
-    color: #fff;
-    background-color: #1b6ec2;
-    border-color: #1861ac;
-}
-
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
-}
-
-h1:focus {
-    outline: none;
+/* ── Auth page centering ────────────────────────────── */
+.auth-page-wrapper {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
 }
 
 /* ── Blazor form validation ─────────────────────────── */
 .valid.modified:not([type=checkbox]) { outline: 1px solid #26b050; }
 .invalid                              { outline: 1px solid #e50000; }
-.validation-message                   { color: #e50000; }
+.validation-message                   { color: #D32F2F; font-size: 0.75rem; margin-top: 4px; padding-left: 14px; display: block; }
+
+/* ── Floating Label Field ───────────────────────────── */
+.field-wrapper {
+    position: relative;
+    margin-bottom: 1.25rem;
+}
+
+.field-input {
+    width: 100%;
+    padding: 16px 14px;
+    font-size: 1rem;
+    font-family: inherit;
+    border: 1.5px solid #C4C4C4;
+    border-radius: 8px;
+    outline: none;
+    background: #fff;
+    color: #1A1A2E;
+    box-sizing: border-box;
+    transition: border-color 0.2s;
+    display: block;
+    -webkit-appearance: none;
+    appearance: none;
+}
+.field-input:focus     { border: 2px solid #FF1493; }
+.field-input:disabled  { background: #F9F9F9; color: #9E9E9E; border-color: #E0E0E0; cursor: not-allowed; }
+.field-input--otp      { font-size: 26px; text-align: center; letter-spacing: 16px; text-indent: 16px; font-variant-numeric: tabular-nums; }
+
+.field-label {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 1rem;
+    color: #9E9E9E;
+    pointer-events: none;
+    background: #fff;
+    padding: 0 4px;
+    line-height: 1;
+    transition: top 0.18s ease, font-size 0.18s ease, color 0.18s ease;
+}
+
+.field-input:focus ~ .field-label,
+.field-input:not(:placeholder-shown) ~ .field-label {
+    top: 0;
+    font-size: 0.75rem;
+    color: #FF1493;
+}
+.field-input:not(:focus):not(:placeholder-shown) ~ .field-label { color: #9E9E9E; }
+
+
+/* ── Card ────────────────────────────────────────────── */
+.auth-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.10);
+    width: 100%;
+    max-width: 420px;
+}
+
+/* ── Typography ──────────────────────────────────────── */
+.app-title {
+    font-size: 1.4rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-align: center;
+    margin: 0 0 1.5rem;
+    color: #1A1A2E;
+}
+.section-title {
+    font-size: 1.05rem;
+    font-weight: 600;
+    text-align: center;
+    margin: 0 0 1.25rem;
+    color: #1A1A2E;
+}
+
+/* ── Buttons ─────────────────────────────────────────── */
+.auth-btn {
+    display: block;
+    width: 100%;
+    padding: 14px;
+    background: #FF1493;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    transition: background 0.2s;
+    margin-bottom: 1rem;
+    text-align: center;
+}
+.auth-btn:hover              { background: #e0007a; }
+.auth-btn:disabled           { background: #ffb3d9; cursor: not-allowed; }
+
+.auth-btn-ghost {
+    display: block;
+    width: 100%;
+    padding: 13px;
+    background: transparent;
+    color: #FF1493;
+    border: 1.5px solid #FF1493;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+    text-align: center;
+    text-decoration: none;
+    margin-bottom: 1rem;
+    box-sizing: border-box;
+}
+.auth-btn-ghost:hover { background: #fff0f8; }
+
+/* ── Inline button spinner ───────────────────────────── */
+.btn-spinner {
+    display: inline-block;
+    width: 15px;
+    height: 15px;
+    border: 2px solid rgba(255,255,255,0.4);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    vertical-align: middle;
+    margin-right: 8px;
+}
+
+/* ── Page spinner ────────────────────────────────────── */
+.spinner {
+    width: 48px;
+    height: 48px;
+    border: 4px solid #fce4ec;
+    border-top-color: #FF1493;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin: 0 auto 1.25rem;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── Alert ───────────────────────────────────────────── */
+.auth-alert {
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+}
+.auth-alert--error   { background: #fde8e8; color: #c62828; border: 1px solid #ffcdd2; }
+.auth-alert--warning { background: #fff3e0; color: #e65100; border: 1px solid #ffe0b2; }
+
+/* ── Toast ───────────────────────────────────────────── */
+.app-toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    min-width: 280px;
+    max-width: 90vw;
+    padding: 14px 18px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.18);
+    z-index: 9999;
+    animation: toast-in 0.25s ease;
+}
+@keyframes toast-in {
+    from { opacity: 0; transform: translateX(-50%) translateY(16px); }
+    to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+.app-toast--error   { background: #D32F2F; color: #fff; }
+.app-toast--warning { background: #F57C00; color: #fff; }
+.app-toast--success { background: #2e7d32; color: #fff; }
+
+.app-toast-close {
+    background: none;
+    border: none;
+    color: inherit;
+    cursor: pointer;
+    font-size: 1.1rem;
+    padding: 0;
+    opacity: 0.8;
+    line-height: 1;
+    flex-shrink: 0;
+}
+.app-toast-close:hover { opacity: 1; }
+
+/* ── Link ────────────────────────────────────────────── */
+.auth-link            { color: #FF1493; text-decoration: none; font-size: 0.875rem; }
+.auth-link:hover      { text-decoration: underline; }
+
+/* ── Divider ─────────────────────────────────────────── */
+.auth-divider         { border: none; border-top: 1px solid #E0E0E0; margin: 1rem 0; }
 
 /* ── Blazor error boundary ──────────────────────────── */
 .blazor-error-boundary {
@@ -35,21 +225,6 @@ h1:focus {
     color: white;
 }
 .blazor-error-boundary::after { content: "An error has occurred." }
-
-/* ── OTP Input ──────────────────────────────────────── */
-.otp-input {
-    font-size: 28px;
-    text-align: center;
-    letter-spacing: 20px;
-    text-indent: 20px;
-    font-variant-numeric: tabular-nums;
-}
-.otp-input::placeholder {
-    letter-spacing: 12px;
-    text-indent: 12px;
-    font-size: 18px;
-    color: #bbb;
-}
 
 /* ── Slide-in from right ────────────────────────────── */
 .slide-from-right {
@@ -115,8 +290,8 @@ h1:focus {
 .reconnect-spinner {
     width: 48px;
     height: 48px;
-    border: 4px solid #e0e7ef;
-    border-top-color: #4a90e2;
+    border: 4px solid #fce4ec;
+    border-top-color: #FF1493;
     border-radius: 50%;
     animation: reconnect-spin 0.8s linear infinite;
     margin: 0 auto 20px;
@@ -144,11 +319,11 @@ h1:focus {
     padding: 10px 24px;
     border: none;
     border-radius: 8px;
-    background: #4a90e2;
+    background: #FF1493;
     color: #fff;
     font-size: 14px;
     font-weight: 500;
     cursor: pointer;
     transition: background 0.2s;
 }
-.reconnect-btn:hover { background: #357abd; }
+.reconnect-btn:hover { background: #e0007a; }
