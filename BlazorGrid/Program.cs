@@ -3,18 +3,20 @@ using System.Threading.RateLimiting;
 using BlazorGrid.Components;
 using BlazorGrid.Services;
 using Microsoft.AspNetCore.RateLimiting;
-
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddHttpClient();
 builder.Services.AddHealthChecks();
-builder.Services.AddSignalR().AddMessagePackProtocol();
-
+builder.Services.AddSignalR()
+    .AddMessagePackProtocol();
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents(options =>
     {
         options.DisconnectedCircuitRetentionPeriod = TimeSpan.FromMinutes(1);
     })
-    .AddInteractiveWebAssemblyComponents();
+    .AddHubOptions(options =>
+    {
+        options.SupportedProtocols = null;
+    });
 builder.Services.AddSingleton<QueryParamProtector>();
 
 builder.Services.AddRateLimiter(options =>
@@ -24,8 +26,8 @@ builder.Services.AddRateLimiter(options =>
             partitionKey: context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
             factory: _ => new FixedWindowRateLimiterOptions
             {
-                PermitLimit = 10,
-                Window = TimeSpan.FromSeconds(10),
+                PermitLimit = 6000,
+                Window = TimeSpan.FromMinutes(1),
                 QueueLimit = 0
             }));
 
@@ -34,11 +36,8 @@ builder.Services.AddRateLimiter(options =>
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
-{
-    app.UseWebAssemblyDebugging();
-}
-else
+if (!app.Environment.IsDevelopment())
+
 {
     app.UseExceptionHandler("/Error", createScopeForErrors: true);
     app.UseHsts();
@@ -52,8 +51,6 @@ app.UseAntiforgery();
 app.MapHealthChecks("/health");
 
 app.MapRazorComponents<App>()
-    .AddInteractiveServerRenderMode()
-    .AddInteractiveWebAssemblyRenderMode()
-    .AddAdditionalAssemblies();
+    .AddInteractiveServerRenderMode();
 
 app.Run();
