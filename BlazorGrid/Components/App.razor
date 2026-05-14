@@ -36,11 +36,16 @@
             </div>
         </div>
     </div>
-
+    <script src="/js/signalr.min.js"></script>
+    <script src="/js/signalr-protocol-msgpack.min.js"></script>
     <script src="_framework/blazor.web.js" autostart="false"></script>
     <script>
         Blazor.start({
+            
             circuit: {
+                configureSignalR: function (builder) {
+                    builder.withHubProtocol(new signalR.protocols.msgpack.MessagePackHubProtocol());
+                },
                 reconnectionOptions: {
                     maxRetries: 20,
                     retryIntervalMilliseconds: 3000,
