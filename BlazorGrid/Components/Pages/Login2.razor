@@ -58,8 +58,8 @@
                             <label class="field-label" for="login-password">Password</label>
                             <ValidationMessage For="@(() => loginModel.Password)" />
                         </div>
-
-                        <button type="submit" class="auth-btn">Login</button>
+                        <button disabled =@logingIn class="auth-btn">Login</button>
+                       
                     </EditForm>
 
                     <p class="text-center" style="margin:0;">
@@ -85,59 +85,72 @@
     public string? RedirectUrl { get; set; }
 
     private LoginModel loginModel = new();
-    private bool isWaiting2FA = false;
-    private bool approved2FA = false;
+    private bool isWaiting2FA, approved2FA = false;
+    private bool logingIn = false;
     private string? transactionId;
 
     private string? _toastMsg;
     private string _toastType = "error";
     private void ShowToast(string msg, string type = "error") { _toastMsg = msg; _toastType = type; }
-
+   
+    private void ClearToast() => _toastMsg = null;
     protected async Task HandleLogin()
     {
-        // var response = await Http.PostAsJsonAsync("api/auth/login", loginModel);
-        // var result = await response.Content.ReadFromJsonAsync<LoginResponseModel>();
-        Thread.Sleep(200);
-        var result = new LoginResponseModel();
-        if (loginModel.Password.StartsWith("e"))
-            result.Status = "PASSWORD_EXPIRED";
-        else if (loginModel.Password.StartsWith("u"))
-            result.Status = "UNACTIVATE";
-        else if (!loginModel.Password.Contains("Password123"))
-            result.Status = "INVALID";
-        else
-            result.Status = "REQUIRES_2FA";
+        ClearToast();
+        logingIn = true;
+        StateHasChanged();
+        await Task.Yield();
+        try{
+            // var response = await Http.PostAsJsonAsync("api/auth/login", loginModel);
+            // var result = await response.Content.ReadFromJsonAsync<LoginResponseModel>();
+            Thread.Sleep(1500);
+            var result = new LoginResponseModel();
+            if (loginModel.Password.StartsWith("e"))
+                result.Status = "PASSWORD_EXPIRED";
+            else if (loginModel.Password.StartsWith("u"))
+                result.Status = "UNACTIVATE";
+            else if (!loginModel.Password.Contains("Password123"))
+                result.Status = "INVALID";
+            else
+                result.Status = "REQUIRES_2FA";
 
-        var token = Uri.EscapeDataString(Protector.Protect(loginModel.Username, "/login2" ?? "/"));
+            var token = Uri.EscapeDataString(Protector.Protect(loginModel.Username, "/login2" ?? "/"));
 
-        switch (result.Status)
-        {
-            case "SUCCESS":
-                NavigationManager.NavigateTo(RedirectUrl ?? "/");
-                break;
+            switch (result.Status)
+            {
+                case "SUCCESS":
+                    NavigationManager.NavigateTo(RedirectUrl ?? "/");
+                    break;
 
-            case "INVALID":
-                ShowToast("Invalid username or password");
-                break;
+                case "INVALID":
+                    ShowToast("Invalid username or password");
+                    break;
 
-            case "PASSWORD_EXPIRED":
-                NavigationManager.NavigateTo($"/change-password?token={token}");
-                break;
+                case "PASSWORD_EXPIRED":
+                    NavigationManager.NavigateTo($"/change-password?token={token}");
+                    break;
 
-            case "UNACTIVATE":
-                NavigationManager.NavigateTo($"/reset-password?token={token}");
-                break;
+                case "UNACTIVATE":
+                    NavigationManager.NavigateTo($"/reset-password?token={token}");
+                    break;
 
-            case "REQUIRES_2FA":
-                isWaiting2FA = true;
-                await mockAuth();
-                transactionId = result.TransactionId;
-                await Task.Delay(7000);
-                approved2FA = true;
-                StateHasChanged();
-                await Task.Delay(2000);
-                NavigationManager.NavigateTo(RedirectUrl ?? "/");
-                break;
+                case "REQUIRES_2FA":
+                    isWaiting2FA = true;
+                    await mockAuth();
+                    transactionId = result.TransactionId;
+                    await Task.Delay(7000);
+                    approved2FA = true;
+                    StateHasChanged();
+                    await Task.Delay(2000);
+                    NavigationManager.NavigateTo(RedirectUrl ?? "/");
+                    break;
+            }
+            logingIn = false;
+            StateHasChanged();
+        }
+        catch(Exception ex){
+            ShowToast("An error occurred during login. Please try again.");
+            logingIn = false;
         }
     }
     public static async Task  mockAuth(){

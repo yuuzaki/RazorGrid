@@ -328,15 +328,23 @@ html, body {
 }
 .blazor-error-boundary::after { content: "An error has occurred." }
 
+/* ── Slide-in from top ────────────────────────────── */
+.slide-from-top {
+    animation: slideFromTop 0.35s ease both;
+}
+
 /* ── Slide-in from right ────────────────────────────── */
 .slide-from-right {
     animation: slideFromRight 0.35s ease both;
 }
 @keyframes slideFromRight {
-    from { opacity: 0; transform: translateX(48px); }
+    from { opacity: 0; transform: translateX(30px); }
     to   { opacity: 1; transform: translateX(0); }
 }
-
+@keyframes slideFromTop {
+    from { opacity: 0; transform: translateY(-30px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
 /* ── Dots animation ─────────────────────────────────── */
 .dots::after {
     content: '';
