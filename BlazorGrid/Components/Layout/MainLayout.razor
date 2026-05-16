@@ -1,9 +1,55 @@
 @inherits LayoutComponentBase
 
-@Body
+<div id="top-header">
+    <div class="header-long">
+        <img src="/icon/favicon.png" alt="Logo" class="logo" />
+        <button @onclick="ToggleTheme">
+            @(isDark ? "☀️ Light" : "🌙 Dark")
+        </button>
+    </div>
+</div>
 
-<div id="blazor-error-ui">
-    An unhandled error has occurred.
+<div class="login-split-wrapper">
+
+    <!-- Left: image panel (hidden on narrow screens) -->
+    <div class="login-image-panel">
+        <!-- Replace the src below with your image path, e.g. /images/login-bg.jpg -->
+        <img src="/images/DSC02122.jpg" alt="" />
+        <div class="login-image-overlay"></div>
+    </div>
+    <!-- Right: login form -->
+    <div class="login-form-panel">
+    @Body
+
+    </div>
+</div>
+
+
+<div id="bottom-error-ui">
+    An unhandled error has occurred. Please contact support or try refreshing the page.
     <a href="" class="reload">Reload</a>
     <a class="dismiss">&#x1F5D9;</a>
 </div>
+@code{
+@inject IJSRuntime JS
+
+    private bool isDark = false;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            var saved = await JS.InvokeAsync<string>("themeHelper.getTheme");
+            isDark = saved == "dark";
+            await JS.InvokeVoidAsync("themeHelper.setTheme", isDark ? "dark" : "light");
+            StateHasChanged();
+        }
+    }
+
+    private async Task ToggleTheme()
+    {
+        isDark = !isDark;
+        await JS.InvokeVoidAsync("themeHelper.setTheme", isDark ? "dark" : "light");
+    }
+
+}
