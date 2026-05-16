@@ -6,16 +6,11 @@ using Microsoft.AspNetCore.RateLimiting;
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddHttpClient();
 builder.Services.AddHealthChecks();
-builder.Services.AddSignalR()
-    .AddMessagePackProtocol();
+builder.Services.AddSignalR();
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents(options =>
     {
         options.DisconnectedCircuitRetentionPeriod = TimeSpan.FromMinutes(1);
-    })
-    .AddHubOptions(options =>
-    {
-        options.SupportedProtocols = null;
     });
 builder.Services.AddSingleton<QueryParamProtector>();
 

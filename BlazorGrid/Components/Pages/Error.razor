@@ -5,8 +5,8 @@
 
 <div class="auth-page-wrapper">
     <div class="auth-card" style="max-width:540px;">
-        <h1 style="color:#D32F2F; font-weight:700; font-size:1.8rem; margin:0 0 0.5rem;">Error</h1>
-        <p style="color:#D32F2F; margin:0 0 1rem;">An error occurred while processing your request.</p>
+        <h1 style="color:var(--error-title); font-weight:700; font-size:1.8rem; margin:0 0 0.5rem;">Error</h1>
+        <p style="color:var(--error-title); margin:0 0 1rem;">An error occurred while processing your request.</p>
         <hr class="auth-divider" />
         @if (ShowRequestId)
         {
@@ -14,11 +14,11 @@
                 <strong>Request ID:</strong> <code>@RequestId</code>
             </div>
         }
-        <p style="font-weight:600; margin:0 0 0.5rem; color:#1A1A2E;">Development Mode</p>
-        <p style="color:#6B7280; font-size:0.9rem; margin:0 0 0.5rem;">
+        <p style="font-weight:600; margin:0 0 0.5rem; color:var(--text-primary);">Development Mode</p>
+        <p style="color:var(--text-secondary); font-size:0.9rem; margin:0 0 0.5rem;">
             Swapping to <strong>Development</strong> environment will display more detailed information about the error that occurred.
         </p>
-        <p style="color:#6B7280; font-size:0.9rem; margin:0;">
+        <p style="color:var(--text-secondary); font-size:0.9rem; margin:0;">
             Set <strong>ASPNETCORE_ENVIRONMENT</strong> to <strong>Development</strong> and restart the app.
         </p>
     </div>
