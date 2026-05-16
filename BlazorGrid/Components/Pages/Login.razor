@@ -1,9 +1,12 @@
 @page "/login"
+@using System.ComponentModel.DataAnnotations
+@using BlazorGrid.Model;
 @inject HttpClient Http
 @rendermode @(new InteractiveServerRenderMode(prerender: false))
 @inject NavigationManager NavigationManager
 @inject BlazorGrid.Services.QueryParamProtector Protector
-@using System.ComponentModel.DataAnnotations
+@inject IHttpContextAccessor HttpContextAccessor
+@inject ClientInfoState clientInfoState
 
 
 <div class="auth-card">
@@ -83,6 +86,8 @@
     private void ClearToast() => _toastMsg = null;
     protected async Task HandleLogin()
     {
+        await Task.Delay(120);
+        //Console.WriteLine(GetIpAddress());
         ClearToast();
         logingIn = true;
         StateHasChanged();
@@ -151,6 +156,7 @@
         }
 
     }
+   
     public class LoginResponseModel
     {
         public string Status { get; set; } = "SUCCESS";

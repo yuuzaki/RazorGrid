@@ -2,7 +2,10 @@
 using System.Threading.RateLimiting;
 using BlazorGrid.Components;
 using BlazorGrid.Services;
+using BlazorGrid.Model;
+using BlazorGrid.Handler;
 using Microsoft.AspNetCore.RateLimiting;
+using Microsoft.AspNetCore.Components.Server.Circuits;
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddHttpClient();
 builder.Services.AddHealthChecks();
@@ -29,6 +32,9 @@ builder.Services.AddRateLimiter(options =>
     options.RejectionStatusCode = 429;
 });
 
+builder.Services.AddHttpContextAccessor(); 
+builder.Services.AddScoped<ClientInfoState>();
+builder.Services.AddScoped<CircuitHandler, CInfoCircuitHandler>();
 var app = builder.Build();
 
 if (!app.Environment.IsDevelopment())

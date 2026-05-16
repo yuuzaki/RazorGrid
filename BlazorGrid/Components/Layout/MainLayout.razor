@@ -1,8 +1,10 @@
 @inherits LayoutComponentBase
-
+@using BlazorGrid.Model;
+@inject ClientInfoState clientInfoState
 <div id="top-header">
     <div class="header-long">
         <img src="/icon/favicon.png" alt="Logo" class="logo" />
+        <h2 class="section-title">@clientInfoState.IpAddress</h2>
         <button @onclick="ToggleTheme">
             @(isDark ? "☀️ Light" : "🌙 Dark")
         </button>
@@ -31,7 +33,7 @@
     <a class="dismiss">&#x1F5D9;</a>
 </div>
 @code{
-@inject IJSRuntime JS
+    @inject IJSRuntime JS
 
     private bool isDark = false;
 
@@ -51,5 +53,5 @@
         isDark = !isDark;
         await JS.InvokeVoidAsync("themeHelper.setTheme", isDark ? "dark" : "light");
     }
-
+   
 }
