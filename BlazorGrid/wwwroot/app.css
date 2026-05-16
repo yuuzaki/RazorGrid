@@ -795,3 +795,58 @@ html, body {
     transition: background 0.2s;
 }
 .reconnect-btn:hover { background: var(--accent-hover); }
+
+/* ── Login2 split layout ────────────────────────────── */
+.login-split-wrapper {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+}
+
+.login-image-panel {
+    flex: 0 0 60%;
+    position: relative;
+    overflow: hidden;
+}
+
+.login-image-panel img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.login-image-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255,20,147,0.25) 0%, rgba(0,0,0,0.15) 100%);
+}
+
+.login-form-panel {
+    flex: 0 0 40%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px 20px;
+    min-height: 100vh;
+    box-sizing: border-box;
+}
+
+.login-form-panel .auth-card {
+    width: 100%;
+    max-width: 400px;
+}
+
+@media (max-width: 768px) {
+    .login-image-panel {
+        display: none;
+    }
+
+    .login-form-panel {
+        flex: 1 1 auto;
+        width: 100%;
+        min-height: 100vh;
+        padding: 16px;
+    }
+}
